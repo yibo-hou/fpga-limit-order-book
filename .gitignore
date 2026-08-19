@@ -1,0 +1,60 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+dist/
+
+# System
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Vivado & Xilinx
+*.jou
+*.log
+*.pb
+*.wdb
+*.vcd
+*.str
+*.zip
+.Xil/
+hardware/build/
+hardware/sim/xsim.dir/
+hardware/sim/*.wdb
+hardware/sim/*.pb
+hardware/tools/.Xil/
+vivado*.jou
+vivado*.log
+
+# Questa/ModelSim
+hardware/verif/work/
+hardware/verif/transcript
+hardware/verif/vsim.wlf
+hardware/verif/*.wlf
+hardware/verif/modelsim.ini
+
+# Output / Build
+software/build/
+hardware/sim/*.vcd
+hardware/sim/*.vvp
+hardware/sim/*.hex
+hardware/sim/build/
+out_*.txt
+*.dcp
+*.rpt
+*.csv
+*.bit
+
+# Misc
+clockInfo.txt
+tight_setup_hold_pins.txt
+hs_err_pid*.log

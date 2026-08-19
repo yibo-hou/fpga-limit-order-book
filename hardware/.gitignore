@@ -1,0 +1,5 @@
+sim/*.vvp
+sim/*.vcd
+sim/out_*.txt
+sim/stimulus.hex
+sim/build/
