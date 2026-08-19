@@ -51,11 +51,11 @@ acknowledgement against the golden model.
                                          ▼
                           back to host (UDP port 5000)
 
-       ┌────────────────────────────────────────────────────────┐
-       │  UVM verification (Questa)                             │
-       │  replays the same 32-byte stimulus and checks every     │
-       │  trade / ack / snapshot against the Python golden model │
-       └────────────────────────────────────────────────────────┘
+            ┌──────────────────────────────────────────────────────────┐
+            │  UVM verification (Questa)                               │
+            │  Replays the same 32-byte stimulus and checks every      │
+            │  trade / ack / snapshot against the Python golden model  │
+            └──────────────────────────────────────────────────────────┘
 ```
 
 ## Features
