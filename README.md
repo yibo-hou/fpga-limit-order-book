@@ -16,47 +16,11 @@ deterministic software order flow can drive the FPGA directly over UDP, and
 the same flow can be replayed by the UVM scoreboard to check every trade and
 acknowledgement against the golden model.
 
-```
-                        ┌──────────────────────────────────┐
-                        │        Host — software/          │
-                        │                                  │
-                        │   lob/simulator.py               │
-                        │    deterministic order flow      │
-                        │   lob/consumer.py                │
-                        │    golden reference OrderBook    │
-                        └────────────────┬─────────────────┘
-                                         │ 32-byte UDP datagrams
-                                         ▼
-                        ┌──────────────────────────────────┐
-                        │        FPGA — XC7A100T           │
-                        │                                  │
-                        │   eth_ipv4_udp_rx               │
-                        │          │ payload[255:0]        │
-                        │          ▼                       │
-                        │   message_decoder                │
-                        │          │ cmd_t                 │
-                        │          ▼                       │
-                        │   lob_engine_top                 │
-                        │    ├─ matcher                    │
-                        │    ├─ order_manager              │
-                        │    ├─ price_level                │
-                        │    ├─ order_memory               │
-                        │    ├─ order_id_table             │
-                        │    └─ trade_generator            │
-                        │          │                       │
-                        │          ▼                       │
-                        │   udp_ipv4_eth_tx                │
-                        └────────────────┬─────────────────┘
-                                         │ 2× 32-byte EXECUTE reports + ACKs
-                                         ▼
-                          back to host (UDP port 5000)
+![Live board order flow](docs/assets/Live%20Board%20Order%20Flow.png)
 
-            ┌──────────────────────────────────────────────────────────┐
-            │  UVM verification (Questa)                               │
-            │  Replays the same 32-byte stimulus and checks every      │
-            │  trade / ack / snapshot against the Python golden model  │
-            └──────────────────────────────────────────────────────────┘
-```
+The live board path receives an order over RGMII/UDP, decodes and routes it
+through the matching engine, then returns execution reports and a command
+acknowledgement to the Python host.
 
 ## Features
 
@@ -67,6 +31,23 @@ acknowledgement against the golden model.
 - Deterministic Python golden model and stress-test generator
 - Portable Python and Icarus Verilog tests
 - Vivado build scripts and a Questa UVM verification environment
+
+## Matching paths
+
+The matcher reaches a trade in two ways. A new crossing ADD takes the fast
+path and is matched before any remainder is stored. If an ADD or a
+price-changing MODIFY leaves the live book crossed, the drain path removes
+crossed orders directly until the book is consistent again.
+
+![Fast path and drain path to a trade](docs/assets/How%20Fast%20Path%20and%20Drain%20Path%20Reach%20a%20Trade.png)
+
+## Order-book storage
+
+Persistent state is split across a fixed-slot order pool, per-price FIFO
+queues, a four-way set-associative order-ID index and a best-price tracker.
+This keeps price-time priority and avoids software-style pointer chasing.
+
+![Order-book storage and lookup](docs/assets/ORDER%20BOOK%20STORAGE%20%26%20LOOKUP.png)
 
 ## Repository layout
 
@@ -107,6 +88,15 @@ Run the Python demonstration separately with:
 ```bash
 make -C software demo
 ```
+
+## Verification
+
+The Questa UVM environment replays the same 32-byte stimulus as the Python
+golden model and checks trades, execution reports, acknowledgements and the
+final book snapshot. This sweep shows three consecutive fills advancing the
+best ask from 100 through 102 and finally to an empty sell side.
+
+![Questa matching sweep waveform](docs/assets/questa_sweep.png)
 
 ## FPGA build
 
