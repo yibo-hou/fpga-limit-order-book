@@ -39,7 +39,7 @@ path and is matched before any remainder is stored. If an ADD or a
 price-changing MODIFY leaves the live book crossed, the drain path removes
 crossed orders directly until the book is consistent again.
 
-![Fast path and drain path to a trade](docs/assets/How%20Fast%20Path%20and%20Drain%20Path%20Reach%20a%20Trade.png)
+![Fast path and drain path to a trade](docs/assets/How%20Fast%20Path%20and%20Drain%20Path%20Reach%20a%20Trade.png.png)
 
 ## Order-book storage
 
